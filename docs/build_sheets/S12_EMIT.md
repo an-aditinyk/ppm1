@@ -50,9 +50,10 @@ Pure spine→Tally. No source concept appears; input is only `CanonicalBatch`.
 - **Voucher numbering:** Tally auto-numbers; we accept it (X5). No emitter change.
 - **Bill allocations / GST / `PARTYLEDGERNAME`:** not emitted; depend on the S08 canonical
   extension (`README.md` §5 #4).
-- **Response parsing (§2.3):** `TallyImportResult` is modeled but unparsed. Tally's
-  response/export is **UTF-16 with control chars** (`&#4;`); a future parser must decode
-  UTF-16 + use a recovering parser (`ROUNDTRIP_FINDINGS.md`). The UTF-8 *emitter* is unaffected.
+- **Response parsing (§2.3) — DONE.** `s12_emit/response.py::parse_import_result` decodes by
+  BOM (UTF-16/UTF-8) and uses a recovering parser to tolerate Tally's embedded control chars
+  (`&#4;`), returning `TallyImportResult`; `is_success` checks `errors==0 and ignored==0`. The
+  UTF-8 emitter is unaffected (this is the read side).
 
 ## 8. DoD (met for Phase 1) + future tests
 - [x] Pure mapper; deterministic serializer; validator covers §2.2 with negatives.
@@ -60,5 +61,5 @@ Pure spine→Tally. No source concept appears; input is only `CanonicalBatch`.
 - [x] Validated on real TallyPrime (imported clean; round-tripped faithfully).
 - [x] masters emitter in `src/` (`serialize_masters` + `validate_masters_xml`); both files
       via `run_pipeline_full`.
-- [ ] *(future)* response parser (UTF-16) for §2.3.
+- [x] response parser (UTF-16 + recovering) for §2.3 (`parse_import_result` / `is_success`).
 - [x] `make check` green.
