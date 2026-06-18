@@ -93,11 +93,16 @@ the S12 mapper (§2.2 rule 5).** No `float` in any money path, any stage.
 | S05 map ledgers | `S05_MAP_LEDGERS.md` | adapter | Design |
 | S06 canonicalize | `S06_CANONICALIZE.md` | **seam** | Design |
 | S07 validate | `S07_VALIDATE.md` | spine | Design |
-| S08 enrich | `S08_ENRICH.md` | spine | Design (Phase ≥2; needs canonical extension) |
-| S09 number | `S09_NUMBER.md` | spine | Design (scoped by X5) |
-| S10 reconcile | `S10_RECONCILE.md` | spine | Design (Phase ≥2) |
-| S11 review | `S11_REVIEW.md` | spine | Design (Phase ≥2; human loop) |
-| S12 emit | `S12_EMIT.md` | spine | **Implemented**; sheet documents as-built + gaps |
+| S08 enrich | `S08_ENRICH.md` | spine | **Implemented** (bill allocations + party ledger; opt-in) |
+| S09 number | `S09_NUMBER.md` | spine | **Implemented** (scoped by X5) |
+| S10 reconcile | `S10_RECONCILE.md` | spine | **Implemented** (prior-import state; opt-in) |
+| S11 review | `S11_REVIEW.md` | spine | **Implemented** (human-loop gate; out-of-band) |
+| S12 emit | `S12_EMIT.md` | spine | **Implemented** (vouchers + masters + response parse) |
+
+All 12 stages are implemented. The default pipeline runs S01→S07→S09→S12 (the validated
+posting path); S08/S10 are opt-in on `run_pipeline_full`; S11 is a human gate used
+out-of-band. The Phase-2 contract extensions (`docs/CONTRACT_EXTENSIONS_PHASE2.md`) are
+accepted and applied.
 
 ## 5. Required contract changes already surfaced (separate reviewed step — NOT done)
 

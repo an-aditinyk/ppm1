@@ -74,6 +74,21 @@ def _validate_ledger_line(line: etree._Element) -> Decimal:
             amount >= 0,
             f"ISDEEMEDPOSITIVE=No (credit) requires non-negative AMOUNT, got {amount}",
         )
+
+    allocations = line.findall("BILLALLOCATIONS.LIST")
+    if allocations:
+        alloc_total = Decimal("0")
+        for bill in allocations:
+            for tag in ("NAME", "BILLTYPE", "AMOUNT"):
+                _require(
+                    bill.find(tag) is not None,
+                    f"BILLALLOCATIONS.LIST missing required <{tag}>",
+                )
+            alloc_total += _validate_amount(bill.findtext("AMOUNT"))
+        _require(
+            alloc_total == amount,
+            f"bill allocations sum to {alloc_total}, expected entry AMOUNT {amount}",
+        )
     return amount
 
 

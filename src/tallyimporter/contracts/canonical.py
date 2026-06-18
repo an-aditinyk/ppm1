@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -35,6 +35,24 @@ def _coerce_amount(value: object) -> Decimal:
 
 PositiveAmount = Annotated[Decimal, Field(gt=0)]
 
+BillKind = Literal["new", "against", "advance", "on_account"]
+
+
+class BillAllocation(BaseModel):
+    """A bill-wise allocation of a party ledger entry (§ Phase-2 enrichment). `amount`
+    is a positive magnitude; allocations of an entry sum to the entry amount."""
+
+    model_config = _FROZEN
+
+    reference: str = Field(min_length=1)
+    kind: BillKind
+    amount: PositiveAmount
+
+    @field_validator("amount", mode="before")
+    @classmethod
+    def _validate_amount(cls, value: object) -> Decimal:
+        return _coerce_amount(value)
+
 
 class CanonicalLedgerEntry(BaseModel):
     model_config = _FROZEN
@@ -42,11 +60,22 @@ class CanonicalLedgerEntry(BaseModel):
     ledger_name: str = Field(min_length=1)
     is_debit: bool
     amount: PositiveAmount  # §5.1: ALWAYS positive magnitude; sign derived from is_debit
+    bill_allocations: tuple[BillAllocation, ...] = ()
 
     @field_validator("amount", mode="before")
     @classmethod
     def _validate_amount(cls, value: object) -> Decimal:
         return _coerce_amount(value)
+
+    @model_validator(mode="after")
+    def _allocations_sum_to_amount(self) -> CanonicalLedgerEntry:
+        if self.bill_allocations:
+            total = sum((b.amount for b in self.bill_allocations), start=Decimal("0"))
+            if total != self.amount:
+                raise ValueError(
+                    f"bill allocations sum to {total}, expected entry amount {self.amount}"
+                )
+        return self
 
 
 class CanonicalVoucher(BaseModel):
@@ -58,6 +87,7 @@ class CanonicalVoucher(BaseModel):
     narration: str | None
     entries: tuple[CanonicalLedgerEntry, ...]
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    party_ledger: str | None = None  # the principal party ledger, if any
 
     @field_validator("entries")
     @classmethod
@@ -67,6 +97,16 @@ class CanonicalVoucher(BaseModel):
         if not value:
             raise ValueError("voucher must have at least one ledger entry")
         return value
+
+    @model_validator(mode="after")
+    def _party_ledger_in_entries(self) -> CanonicalVoucher:
+        if self.party_ledger is not None:
+            names = {e.ledger_name for e in self.entries}
+            if self.party_ledger not in names:
+                raise ValueError(
+                    f"party_ledger {self.party_ledger!r} is not among the voucher's ledgers"
+                )
+        return self
 
     @model_validator(mode="after")
     def _balanced(self) -> CanonicalVoucher:

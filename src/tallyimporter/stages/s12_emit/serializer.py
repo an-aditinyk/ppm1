@@ -54,6 +54,11 @@ def _build_ledger_entry(parent: etree._Element, entry: TallyLedgerEntry) -> None
     _sub(line, "LEDGERNAME", entry.ledger_name)
     _sub(line, "ISDEEMEDPOSITIVE", "Yes" if entry.is_deemed_positive else "No")
     _sub(line, "AMOUNT", render_amount(entry.amount))
+    for alloc in entry.bill_allocations:
+        bill = etree.SubElement(line, "BILLALLOCATIONS.LIST")
+        _sub(bill, "NAME", alloc.name)
+        _sub(bill, "BILLTYPE", alloc.bill_type)
+        _sub(bill, "AMOUNT", render_amount(alloc.amount))
 
 
 def _build_voucher(data: etree._Element, voucher: TallyVoucher) -> None:
@@ -67,6 +72,8 @@ def _build_voucher(data: etree._Element, voucher: TallyVoucher) -> None:
         _sub(vch, "NARRATION", voucher.narration)
     _sub(vch, "VOUCHERTYPENAME", voucher.vch_type)
     _sub(vch, "VOUCHERNUMBER", voucher.voucher_number)
+    if voucher.party_ledger is not None:
+        _sub(vch, "PARTYLEDGERNAME", voucher.party_ledger)
     for entry in voucher.entries:
         _build_ledger_entry(vch, entry)
 

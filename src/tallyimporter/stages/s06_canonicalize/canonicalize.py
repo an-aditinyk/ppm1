@@ -27,6 +27,7 @@ def _voucher(txn: MappedTxn, posting_date: date) -> CanonicalVoucher:
         voucher_number=txn.voucher_number,
         narration=None,
         confidence=txn.confidence,
+        party_ledger=txn.party_ledger,
         entries=(
             CanonicalLedgerEntry(ledger_name=debit, is_debit=True, amount=magnitude),
             CanonicalLedgerEntry(ledger_name=credit, is_debit=False, amount=magnitude),

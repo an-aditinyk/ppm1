@@ -72,14 +72,23 @@ def map_ledgers(
 
     out: list[MappedTxn] = []
     for txn in txns:
+        debit = resolve(txn.debit_account, txn)
+        credit = resolve(txn.credit_account, txn)
+        # The party ledger is whichever side resolved the PARTY sentinel.
+        party: str | None = None
+        if txn.debit_account == PARTY_SENTINEL:
+            party = debit
+        elif txn.credit_account == PARTY_SENTINEL:
+            party = credit
         out.append(
             MappedTxn(
                 voucher_type=txn.voucher_type,
                 confidence=txn.confidence,
                 voucher_number=txn.voucher_number,
                 amount=txn.amount,
-                debit_ledger=resolve(txn.debit_account, txn),
-                credit_ledger=resolve(txn.credit_account, txn),
+                debit_ledger=debit,
+                credit_ledger=credit,
+                party_ledger=party,
             )
         )
     return tuple(out)

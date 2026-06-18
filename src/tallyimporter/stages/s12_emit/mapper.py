@@ -11,30 +11,54 @@ raises ``BalanceError`` (via ``TallyVoucher``'s zero-sum validator).
 
 from __future__ import annotations
 
-from tallyimporter.contracts.canonical import CanonicalBatch, CanonicalVoucher
+from tallyimporter.contracts.canonical import (
+    CanonicalBatch,
+    CanonicalLedgerEntry,
+    CanonicalVoucher,
+)
 from tallyimporter.contracts.tally import (
+    TallyBillAllocation,
     TallyImportEnvelope,
     TallyLedgerEntry,
     TallyVoucher,
 )
 
+# Bill-kind → Tally BILLTYPE (single mapping point).
+_BILL_TYPE: dict[str, str] = {
+    "new": "New Ref",
+    "against": "Agst Ref",
+    "advance": "Advance",
+    "on_account": "On Account",
+}
+
+
+def _map_entry(entry: CanonicalLedgerEntry) -> TallyLedgerEntry:
+    signed = -entry.amount if entry.is_debit else entry.amount
+    allocations = tuple(
+        TallyBillAllocation(
+            name=b.reference,
+            bill_type=_BILL_TYPE[b.kind],
+            amount=-b.amount if entry.is_debit else b.amount,
+        )
+        for b in entry.bill_allocations
+    )
+    return TallyLedgerEntry(
+        ledger_name=entry.ledger_name,
+        is_deemed_positive=entry.is_debit,
+        amount=signed,
+        bill_allocations=allocations,
+    )
+
 
 def _map_voucher(voucher: CanonicalVoucher) -> TallyVoucher:
-    entries = tuple(
-        TallyLedgerEntry(
-            ledger_name=entry.ledger_name,
-            is_deemed_positive=entry.is_debit,
-            amount=-entry.amount if entry.is_debit else entry.amount,
-        )
-        for entry in voucher.entries
-    )
     return TallyVoucher(
         action="Create",
         vch_type=voucher.voucher_type,
         date=voucher.date,
         voucher_number=voucher.voucher_number,
         narration=voucher.narration,
-        entries=entries,
+        party_ledger=voucher.party_ledger,
+        entries=tuple(_map_entry(e) for e in voucher.entries),
     )
 
 

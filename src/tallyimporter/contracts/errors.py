@@ -77,3 +77,21 @@ class CanonicalizeError(StageError):
     """S06 — records could not be assembled into a canonical batch."""
 
     stage = "s06_canonicalize"
+
+
+class EnrichError(StageError):
+    """S08 — enrichment would violate an invariant (e.g. break a voucher's balance)."""
+
+    stage = "s08_enrich"
+
+
+class ReconcileError(StageError):
+    """S10 — reconciliation could not be performed (e.g. ambiguous prior match)."""
+
+    stage = "s10_reconcile"
+
+
+class ReviewError(StageError):
+    """S11 — a review decision was invalid (unknown/conflicting/none approved)."""
+
+    stage = "s11_review"

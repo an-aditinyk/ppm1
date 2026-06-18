@@ -32,7 +32,7 @@ from tallyimporter.stages.s07_validate.contracts import ValidationIssue, Validat
 from tallyimporter.stages.s08_enrich.contracts import EnrichedBatch
 from tallyimporter.stages.s09_number.contracts import NumberedBatch
 from tallyimporter.stages.s10_reconcile.contracts import ReconciliationResult
-from tallyimporter.stages.s11_review.contracts import ReviewDecision, ReviewQueue
+from tallyimporter.stages.s11_review.contracts import ReviewDecision, ReviewItem, ReviewQueue
 from tallyimporter.stages.s12_emit.contracts import EmitRequest, EmitResult
 
 
@@ -130,9 +130,11 @@ def test_s10_reconcile() -> None:
 
 
 def test_s11_review() -> None:
-    queue = ReviewQueue(batch=_batch(), pending_voucher_numbers=("1",))
+    queue = ReviewQueue(
+        batch=_batch(), pending=(ReviewItem(voucher_number="1", reason="low confidence"),)
+    )
     decision = ReviewDecision(voucher_number="1", approved=True)
-    assert queue.pending_voucher_numbers == ("1",)
+    assert queue.pending[0].voucher_number == "1"
     assert decision.approved is True
 
 

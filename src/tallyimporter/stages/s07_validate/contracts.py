@@ -1,31 +1,7 @@
-"""S07 validate — boundary contracts.
-
-Validates canonical business rules and reports typed issues.
-"""
+"""S07 validate - boundary declaration (types live in `contracts/validation.py`)."""
 
 from __future__ import annotations
 
-from typing import Literal
+from tallyimporter.contracts.validation import Severity, ValidationIssue, ValidationReport
 
-from pydantic import BaseModel, ConfigDict, Field
-
-from tallyimporter.contracts.canonical import CanonicalBatch
-
-_FROZEN = ConfigDict(frozen=True, extra="forbid")
-
-Severity = Literal["error", "warning"]
-
-
-class ValidationIssue(BaseModel):
-    model_config = _FROZEN
-
-    voucher_number: str = Field(min_length=1)
-    message: str = Field(min_length=1)
-    severity: Severity
-
-
-class ValidationReport(BaseModel):
-    model_config = _FROZEN
-
-    batch: CanonicalBatch
-    issues: tuple[ValidationIssue, ...]
+__all__ = ["Severity", "ValidationIssue", "ValidationReport"]

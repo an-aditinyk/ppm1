@@ -29,12 +29,26 @@ def _coerce_signed(value: object) -> Decimal:
     raise ValueError(f"amount must be str/int/Decimal, not {type(value).__name__}")
 
 
+class TallyBillAllocation(BaseModel):
+    model_config = _FROZEN
+
+    name: str = Field(min_length=1)
+    bill_type: str = Field(min_length=1)  # Tally BILLTYPE, e.g. "New Ref"
+    amount: Decimal  # SIGNED, matches the parent entry's sign
+
+    @field_validator("amount", mode="before")
+    @classmethod
+    def _validate_amount(cls, value: object) -> Decimal:
+        return _coerce_signed(value)
+
+
 class TallyLedgerEntry(BaseModel):
     model_config = _FROZEN
 
     ledger_name: str = Field(min_length=1)
     is_deemed_positive: bool  # True => "Yes"
     amount: Decimal  # SIGNED, as it appears in XML
+    bill_allocations: tuple[TallyBillAllocation, ...] = ()
 
     @field_validator("amount", mode="before")
     @classmethod
@@ -51,6 +65,7 @@ class TallyVoucher(BaseModel):
     voucher_number: str = Field(min_length=1)
     narration: str | None
     entries: tuple[TallyLedgerEntry, ...]
+    party_ledger: str | None = None
 
     @field_validator("entries")
     @classmethod

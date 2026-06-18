@@ -183,3 +183,4 @@ class MappedTxn(BaseModel):
     amount: Decimal
     debit_ledger: str = Field(min_length=1)
     credit_ledger: str = Field(min_length=1)
+    party_ledger: str | None = None  # the ledger resolved from the PARTY sentinel, if any

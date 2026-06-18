@@ -1,6 +1,14 @@
-# Contract Extensions — Phase 2 (proposal, for review)
+# Contract Extensions — Phase 2 (ACCEPTED & IMPLEMENTED)
 
-> **Status: PROPOSAL. No `contracts/` changed by this document.** This is the separate
+> **Status: ACCEPTED and applied.** The proposal below was approved and implemented:
+> `BillAllocation` + `bill_allocations` + `party_ledger` (canonical & Tally), the S12
+> emit/validate of both, `contracts/validation.py` (shared `ValidationReport`),
+> `s10_reconcile.contracts` (`ImportedVoucherRef`/`PriorImportState` + matched set), and
+> `s11_review.contracts` (`ReviewPolicy`/`ReviewItem`, reshaped `ReviewQueue`). GST stayed
+> Tier A (ordinary entries); Tier-B statutory metadata remains deferred. The text below is
+> retained as the design record.
+>
+> **Original status: PROPOSAL. No `contracts/` changed by this document.** This is the separate
 > reviewed step the build sheets point to (S08 §7, S10 §7, S11 §7; `build_sheets/README.md`
 > §5 items 4–5). It proposes the model changes that unblock S08 (enrich), S10 (reconcile),
 > and S11 (review), with rationale, invariants, Tally mapping, and open questions. Nothing
