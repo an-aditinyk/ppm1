@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ENVELOPE>
+  <HEADER>
+    <VERSION>1</VERSION>
+    <TALLYREQUEST>Import</TALLYREQUEST>
+    <TYPE>Data</TYPE>
+    <ID>All Masters</ID>
+  </HEADER>
+  <BODY>
+    <DESC>
+      <STATICVARIABLES>
+        <SVCURRENTCOMPANY>Zoho Sample Co</SVCURRENTCOMPANY>
+      </STATICVARIABLES>
+    </DESC>
+    <DATA>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 189" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 189</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Sales Account" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Sales Account</NAME>
+          </NAME.LIST>
+          <PARENT>Sales Accounts</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 773" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 773</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 551" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 551</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 485" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 485</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 247" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 247</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 870" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 870</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 231" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 231</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 308" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 308</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Customer 879" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Customer 879</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Bank Account" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Bank Account</NAME>
+          </NAME.LIST>
+          <PARENT>Bank Accounts</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Accounts Receivable" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Accounts Receivable</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Debtors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+      <TALLYMESSAGE xmlns:UDF="TallyUDF">
+        <LEDGER NAME="Accounts Payable" ACTION="Create">
+          <NAME.LIST>
+            <NAME>Accounts Payable</NAME>
+          </NAME.LIST>
+          <PARENT>Sundry Creditors</PARENT>
+        </LEDGER>
+      </TALLYMESSAGE>
+    </DATA>
+  </BODY>
+</ENVELOPE>
