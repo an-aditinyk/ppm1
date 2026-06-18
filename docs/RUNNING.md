@@ -47,16 +47,31 @@ pip install -e ".[dev]"
 
 ## 4. Run it
 
-```bash
-tallyimporter path/to/Zoho_books_data.zip \
-  --company "Your Tally Company" \
-  --date 20260401 \
-  --out ./out
+> **Put the whole command on one line.** Line-continuation characters differ by shell:
+> none needed if it's one line. (`^` continues a line in cmd, `` ` `` in PowerShell,
+> `\` in bash — do **not** mix them up. A stray `\` in cmd becomes a bad argument.)
+
+**Windows — Command Prompt (cmd.exe):**
+
+```bat
+tallyimporter D:\tally-datasets\zoho_books.zip --company "PPM Global.Ltd" --date 20260401 --out .\out
 ```
 
-(equivalently: `python -m tallyimporter ...`)
+**Windows — PowerShell:**
 
-Writes two files into `./out`:
+```powershell
+tallyimporter D:\tally-datasets\zoho_books.zip --company "PPM Global.Ltd" --date 20260401 --out .\out
+```
+
+**macOS / Linux (bash/zsh):**
+
+```bash
+tallyimporter /path/to/Zoho_books_data.zip --company "Your Tally Company" --date 20260401 --out ./out
+```
+
+If `tallyimporter` isn't found, use `python -m tallyimporter ...` with the same arguments.
+
+Writes two files into the `--out` directory:
 - `masters.xml` — the ledgers; **import first**
 - `vouchers.xml` — the vouchers; **import second**
 
