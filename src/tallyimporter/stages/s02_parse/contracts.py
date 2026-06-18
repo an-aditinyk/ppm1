@@ -1,24 +1,7 @@
-"""S02 parse — boundary contracts.
-
-Parses raw documents into ordered, source-shaped records.
-"""
+"""S02 parse — boundary declaration (types live in `contracts/source.py`)."""
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from tallyimporter.contracts.source import IngestedArchive, SourceDataset
 
-_FROZEN = ConfigDict(frozen=True, extra="forbid")
-
-
-class SourceRecord(BaseModel):
-    model_config = _FROZEN
-
-    # Ordered key/value pairs keep parsing deterministic and immutable.
-    fields: tuple[tuple[str, str], ...]
-
-
-class ParsedRecordSet(BaseModel):
-    model_config = _FROZEN
-
-    source_system: str = Field(min_length=1)
-    records: tuple[SourceRecord, ...]
+__all__ = ["IngestedArchive", "SourceDataset"]

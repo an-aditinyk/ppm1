@@ -39,7 +39,16 @@ class ArtifactRole(StrEnum):
     INVENTORY_ADJUSTMENTS = "inventory_adjustments"
 
 
-# ── S01 ingest output ────────────────────────────────────────────────────────────
+# ── S01 ingest input / output ────────────────────────────────────────────────────
+
+
+class IngestRequest(BaseModel):
+    """Imperative-shell input for S01: where to read a source export from."""
+
+    model_config = _FROZEN
+
+    source_system: str = Field(min_length=1)
+    location: str = Field(min_length=1)
 
 
 class RawArtifact(BaseModel):

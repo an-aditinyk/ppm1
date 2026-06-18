@@ -1,18 +1,12 @@
-"""S06 canonicalize — boundary contracts.
+"""S06 canonicalize — boundary declaration.
 
-Assembles the source-agnostic ``CanonicalBatch`` from mapped, classified records.
+Input is `MappedTxn` (shared spine); output is the frozen `CanonicalBatch` — the
+source-agnostic seam.
 """
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
-
 from tallyimporter.contracts.canonical import CanonicalBatch
+from tallyimporter.contracts.source import MappedTxn
 
-_FROZEN = ConfigDict(frozen=True, extra="forbid")
-
-
-class CanonicalizeResult(BaseModel):
-    model_config = _FROZEN
-
-    batch: CanonicalBatch
+__all__ = ["CanonicalBatch", "MappedTxn"]
