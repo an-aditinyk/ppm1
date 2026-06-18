@@ -1,0 +1,28 @@
+[importlinter]
+root_package = tallyimporter
+
+[importlinter:contract:no-stage-imports]
+name = Core and contracts may not import stages
+type = forbidden
+source_modules =
+    tallyimporter.core
+    tallyimporter.contracts
+forbidden_modules =
+    tallyimporter.stages
+
+[importlinter:contract:stage-independence]
+name = Stage packages may not import one another
+type = independence
+modules =
+    tallyimporter.stages.s01_ingest
+    tallyimporter.stages.s02_parse
+    tallyimporter.stages.s03_normalize
+    tallyimporter.stages.s04_classify
+    tallyimporter.stages.s05_map_ledgers
+    tallyimporter.stages.s06_canonicalize
+    tallyimporter.stages.s07_validate
+    tallyimporter.stages.s08_enrich
+    tallyimporter.stages.s09_number
+    tallyimporter.stages.s10_reconcile
+    tallyimporter.stages.s11_review
+    tallyimporter.stages.s12_emit

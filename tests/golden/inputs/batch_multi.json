@@ -1,0 +1,40 @@
+{
+  "company_name": "ACME Pvt Ltd",
+  "source_system": "busy",
+  "vouchers": [
+    {
+      "voucher_type": "Payment",
+      "date": "2026-01-02",
+      "voucher_number": "P-1",
+      "narration": "Office rent",
+      "entries": [
+        { "ledger_name": "Rent", "is_debit": true, "amount": "25000.00" },
+        { "ledger_name": "HDFC Bank", "is_debit": false, "amount": "25000.00" }
+      ],
+      "confidence": 1.0
+    },
+    {
+      "voucher_type": "Receipt",
+      "date": "2026-01-03",
+      "voucher_number": "R-1",
+      "narration": null,
+      "entries": [
+        { "ledger_name": "HDFC Bank", "is_debit": true, "amount": "5000.00" },
+        { "ledger_name": "Interest Received", "is_debit": false, "amount": "5000.00" }
+      ],
+      "confidence": 1.0
+    },
+    {
+      "voucher_type": "Sales",
+      "date": "2026-01-04",
+      "voucher_number": "S-1",
+      "narration": "Invoice <#7> for \"R & D\" services",
+      "entries": [
+        { "ledger_name": "Globex & Co", "is_debit": true, "amount": "1180.00" },
+        { "ledger_name": "Consulting Income", "is_debit": false, "amount": "1000.00" },
+        { "ledger_name": "Output IGST", "is_debit": false, "amount": "180.00" }
+      ],
+      "confidence": 0.8
+    }
+  ]
+}

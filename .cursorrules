@@ -1,0 +1,13 @@
+# TallyImporter — Agent Rules
+
+- Test-first. Write/adjust the failing test before implementation.
+- Money is `Decimal`. A `float` in any money path is a defect.
+- All boundary models are `frozen=True, extra="forbid"`. Inputs validate or raise
+  typed errors — never silently coerce.
+- Output must be deterministic and byte-stable; no time/random/unordered iteration
+  in output.
+- Stages never import each other; depend only on `contracts/` and `core/`.
+- Build XML only via `lxml`; never concatenate strings into XML.
+- The Tally XML contract is fixed by §2 of `PHASE_1_BUILD.md`; do not add or rename
+  tags without a doc reference.
+- Every task ends with `make check` green. Do not proceed on a red gate.

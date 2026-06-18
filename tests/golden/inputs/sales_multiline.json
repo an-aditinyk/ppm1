@@ -1,0 +1,19 @@
+{
+  "company_name": "ACME Pvt Ltd",
+  "source_system": "zoho",
+  "vouchers": [
+    {
+      "voucher_type": "Sales",
+      "date": "2026-01-15",
+      "voucher_number": "S-100",
+      "narration": "Sale of goods to M/s Rao & Sons",
+      "entries": [
+        { "ledger_name": "Rao & Sons", "is_debit": true, "amount": "11800.00" },
+        { "ledger_name": "Sales - Goods", "is_debit": false, "amount": "10000.00" },
+        { "ledger_name": "Output CGST", "is_debit": false, "amount": "900.00" },
+        { "ledger_name": "Output SGST", "is_debit": false, "amount": "900.00" }
+      ],
+      "confidence": 0.95
+    }
+  ]
+}

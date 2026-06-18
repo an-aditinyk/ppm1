@@ -1,0 +1,17 @@
+{
+  "company_name": "ACME Pvt Ltd",
+  "source_system": "zoho",
+  "vouchers": [
+    {
+      "voucher_type": "Payment",
+      "date": "2008-04-02",
+      "voucher_number": "1",
+      "narration": "Ch. No. Tested",
+      "entries": [
+        { "ledger_name": "Conveyance", "is_debit": true, "amount": "12000" },
+        { "ledger_name": "Bank of India", "is_debit": false, "amount": "12000" }
+      ],
+      "confidence": 1.0
+    }
+  ]
+}
