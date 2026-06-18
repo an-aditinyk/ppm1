@@ -1,11 +1,13 @@
-# Running TallyImporter (conda)
+# Running TallyImporter
 
 TallyImporter converts a **Zoho Books export ZIP** into **TallyPrime import XML** —
-a `masters.xml` (ledgers) and a `vouchers.xml`. This guide uses **conda**.
+a `masters.xml` (ledgers) and a `vouchers.xml`. Setup is shown for **conda** and for
+plain **venv + pip** — use whichever your team prefers; everything after §2 is identical.
 
 ## Prerequisites
 
-- **conda** (Miniconda or Anaconda).
+- **Python 3.12** — via conda, or from [python.org](https://www.python.org/downloads/)
+  (Windows: tick *"Add Python to PATH"* in the installer).
 - **git**, with access to the repository.
 - **TallyPrime** on the machine that will import the XML (not needed just to generate it).
 
@@ -17,18 +19,38 @@ cd ppm1
 git checkout claude/modest-archimedes-t2lpto
 ```
 
-## 2. Create the conda environment (Python 3.12)
+## 2. Create the environment (Python 3.12) — pick ONE
 
-The project requires **Python 3.12**.
+The project requires **Python 3.12**. Run these from the repo root.
+
+### Option A — conda
 
 ```bash
 conda create -n tallyimporter python=3.12 -y
 conda activate tallyimporter
 ```
 
+### Option B — venv + pip (no conda)
+
+```bash
+# Windows (Command Prompt) — use the Python launcher to pick 3.12:
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+
+# Windows (PowerShell):
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# macOS / Linux:
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
+
+After activation, `python --version` must print `3.12.x`.
+
 ## 3. Install the package
 
-From the repo root, with the env active:
+With the environment **active**, from the repo root:
 
 ```bash
 pip install -e .          # runtime only
@@ -36,14 +58,14 @@ pip install -e .          # runtime only
 pip install -e ".[dev]"
 ```
 
-`pip install -e .` registers the `tallyimporter` command inside the env.
+This registers the `tallyimporter` command inside the environment.
 
 > Notes
-> - `pip` (inside the conda env) is the supported installer; `lxml` and `pydantic`
->   install as normal wheels. If your network blocks PyPI, install them from
->   conda-forge first: `conda install -c conda-forge lxml "pydantic>=2.7"`, then
->   `pip install -e . --no-deps`.
-> - Always `conda activate tallyimporter` before running, in every new shell.
+> - **Activate the environment in every new shell** before running
+>   (`conda activate tallyimporter`, or re-run the venv `activate` script).
+> - `lxml` and `pydantic` install as normal wheels. If your network blocks PyPI and
+>   you're on conda, install them first with
+>   `conda install -c conda-forge lxml "pydantic>=2.7"`, then `pip install -e . --no-deps`.
 
 ## 4. Run it
 
@@ -132,12 +154,12 @@ pytest
 
 | Symptom | Fix |
 |---|---|
-| `tallyimporter: command not found` | `conda activate tallyimporter`, then re-run `pip install -e .`. |
-| `ERROR ... requires Python >=3.12` | The env isn't 3.12: `python --version`; recreate with `python=3.12`. |
+| `tallyimporter: command not found` | Activate the env first (`conda activate tallyimporter` or the venv `activate` script), then re-run `pip install -e .`. Or use `python -m tallyimporter ...`. |
+| `ERROR ... requires Python >=3.12` | The env isn't 3.12: check `python --version`; recreate it with Python 3.12 (§2). |
 | `error: missing required artifact(s): [...]` | The ZIP lacks a required file (see §4). |
 | `error: input is not a valid ZIP archive` | Point at the actual `.zip`, not an extracted folder. |
 | `Date is out of range` in Tally | The company's financial year doesn't include `--date`; set the FY or change `--date`. |
-| `lxml` build/install fails | `conda install -c conda-forge lxml`, then `pip install -e . --no-deps`. |
+| `lxml` build/install fails | Upgrade pip (`python -m pip install -U pip`) so it fetches a prebuilt wheel; on conda, `conda install -c conda-forge lxml` then `pip install -e . --no-deps`. |
 
 > First time you import output containing `PARTYLEDGERNAME` or bill allocations
 > (`--enrich`), confirm a small batch in a **test company** first — TallyPrime
