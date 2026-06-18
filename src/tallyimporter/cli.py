@@ -37,9 +37,7 @@ def main(argv: list[str] | None = None) -> int:
         type=_parse_date,
         help="posting date YYYYMMDD (the sample export carries no per-document dates)",
     )
-    parser.add_argument(
-        "--out", type=Path, default=Path("."), help="output directory (default: .)"
-    )
+    parser.add_argument("--out", type=Path, default=Path("."), help="output directory (default: .)")
     parser.add_argument(
         "--enrich",
         action="store_true",

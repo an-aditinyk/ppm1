@@ -57,7 +57,13 @@ def test_cli_corrupt_archive_returns_error(tmp_path: Path) -> None:
 
 
 def test_cli_missing_file_returns_2(tmp_path: Path) -> None:
-    rc = main(
-        [str(tmp_path / "nope.zip"), "--company", "Co", "--date", "20260401", "--out", str(tmp_path)]
-    )
-    assert rc == 2
+    argv = [
+        str(tmp_path / "nope.zip"),
+        "--company",
+        "Co",
+        "--date",
+        "20260401",
+        "--out",
+        str(tmp_path),
+    ]
+    assert main(argv) == 2
