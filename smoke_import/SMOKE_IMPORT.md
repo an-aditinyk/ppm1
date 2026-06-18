@@ -12,7 +12,8 @@
 |------|------------|
 | `masters.xml` | "All Masters" envelope creating the 13 ledgers the slice references, each under a Tally **predefined** group. Import this **first**. |
 | `vouchers_slice.xml` | 30-voucher `Import / Data / Vouchers` envelope: 9 Sales, 11 Receipt, 10 Payment, including 5 negative-amount **reversal** vouchers. Import this **second**. |
-| `build_smoke_kit.py` | Regenerates both files deterministically from the Zoho→Tally run. |
+| `build_smoke_kit.py` | Regenerates both files deterministically; `--full` also writes `masters_full.xml`. |
+| `masters_full.xml` | "All Masters" envelope creating **all 998 ledgers** the *full* `zoho_tally_import.xml` references (994 customers + 4 control accounts). Use this only if you import the full 10,200-voucher file instead of the slice. |
 
 Slice composition (from `vouchers_slice.xml`):
 - Voucher types exercised: **Sales, Receipt, Payment** (every type we emit).

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import csv
 import os
+import sys
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
@@ -203,6 +204,29 @@ def main() -> None:
     print(f"masters bytes:  {len(masters_xml):,}")
     print(f"written:        {HERE / 'vouchers_slice.xml'}")
     print(f"                {HERE / 'masters.xml'}")
+
+    if "--full" in sys.argv:
+        # Masters for EVERY ledger the full Zoho run references (use with the full
+        # zoho_tally_import.xml, not the slice). 994 customers + 4 control accounts.
+        full_env = canonical_to_tally(
+            CanonicalBatch(
+                company_name=COMPANY,
+                source_system="zoho",
+                vouchers=tuple(b.voucher for b in built),
+            )
+        )
+        all_ledgers: list[str] = []
+        for v in full_env.vouchers:
+            for e in v.entries:
+                if e.ledger_name not in all_ledgers:
+                    all_ledgers.append(e.ledger_name)
+        full_masters = _build_masters(all_ledgers)
+        etree.fromstring(full_masters)  # well-formedness check
+        (HERE / "masters_full.xml").write_bytes(full_masters)
+        print(
+            f"full masters:   {len(all_ledgers)} ledgers, "
+            f"{len(full_masters):,} bytes -> {HERE / 'masters_full.xml'}"
+        )
 
 
 if __name__ == "__main__":
