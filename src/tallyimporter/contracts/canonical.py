@@ -1,7 +1,12 @@
 """Source-agnostic canonical model (frozen spine).
 
 Every source system collapses into this shape before downstream processing. Amounts
-are positive magnitudes; the debit/credit sign is derived later from ``is_debit``.
+are positive magnitudes; the debit/credit sign is derived later from ``is_debit``
+(see PHASE_1_BUILD.md §5.1). This is the canonical *input* representation and is
+deliberately distinct from the signed Tally ``AMOUNT`` of §2.2, which the mapper
+derives. A raw negative/zero ``amount`` is malformed input and raises loudly here;
+adapting signed source amounts into magnitude + ``is_debit`` is the ingest stage's
+job, not the spine's.
 """
 
 from __future__ import annotations
@@ -36,7 +41,7 @@ class CanonicalLedgerEntry(BaseModel):
 
     ledger_name: str = Field(min_length=1)
     is_debit: bool
-    amount: PositiveAmount  # ALWAYS positive magnitude; sign derived from is_debit
+    amount: PositiveAmount  # §5.1: ALWAYS positive magnitude; sign derived from is_debit
 
     @field_validator("amount", mode="before")
     @classmethod

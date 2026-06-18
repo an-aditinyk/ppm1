@@ -101,6 +101,82 @@ Formats" and TallyHelp Import/Export Masters & Vouchers.
 
 A frozen `TallyImportResult` model captures this now (no parser yet).
 
+## 5. The contract spine — models & mapper (authoritative)
+
+All spine models are Pydantic v2, `frozen=True, extra="forbid"`. Money is `Decimal`;
+never `float`. This section governs the **internal models**; §2 governs the **emitted
+Tally XML**. They are different layers and must not be conflated.
+
+### 5.1 Canonical model (`contracts/canonical.py`) — source-agnostic
+
+```python
+class CanonicalLedgerEntry(BaseModel):
+    ledger_name: str
+    is_debit: bool
+    amount: Decimal          # ALWAYS positive magnitude; sign is derived from is_debit
+
+class CanonicalVoucher(BaseModel):
+    voucher_type: str
+    date: date
+    voucher_number: str
+    narration: str | None
+    entries: tuple[CanonicalLedgerEntry, ...]
+    confidence: float        # 0.0–1.0, default 1.0
+
+class CanonicalBatch(BaseModel):
+    company_name: str
+    source_system: str
+    vouchers: tuple[CanonicalVoucher, ...]
+```
+
+**Invariants (validated at construction; violations raise loudly):**
+
+- **Positive magnitude.** `amount` is the *unsigned magnitude* (`amount > 0`).
+  Direction is carried separately by `is_debit`. A raw negative or zero `amount`
+  is a malformed canonical input and raises `ValidationError` at the boundary — the
+  canonical model never stores a signed amount. This is the canonical *input*
+  representation and is deliberately distinct from the signed Tally `AMOUNT` of §2.2
+  (rule 5), which the mapper derives. Adapting source data that uses signed amounts
+  (e.g. a refund expressed as a negative) into this representation — by taking the
+  magnitude and choosing `is_debit` — is the caller's/ingest stage's job, **not** the
+  spine's.
+- **Balanced.** Per voucher, Σ(debit magnitudes) == Σ(credit magnitudes) (Decimal-equal).
+- **Unique voucher numbers** within a batch; non-empty batch and non-empty entries.
+- **Confidence** in `[0.0, 1.0]`.
+
+### 5.2 Tally target model (`contracts/tally.py`)
+
+```python
+class TallyLedgerEntry(BaseModel):
+    ledger_name: str
+    is_deemed_positive: bool   # True => "Yes"
+    amount: Decimal            # SIGNED, as it appears in the XML
+
+class TallyVoucher(BaseModel):
+    action: Literal["Create","Alter","Cancel","Delete"] = "Create"
+    vch_type: str
+    date: date
+    voucher_number: str
+    narration: str | None
+    entries: tuple[TallyLedgerEntry, ...]
+```
+
+Here `amount` is **signed** exactly as emitted. Per-voucher invariant: signed `amount`s
+sum to `Decimal("0")`, else `BalanceError` (§2.2 rule 5). `TallyImportResult` (§2.3)
+is the response target.
+
+### 5.3 Mapper (`stages/s12_emit/mapper.py`) — the §2.2 sign bridge
+
+```python
+def canonical_to_tally(batch: CanonicalBatch) -> TallyImportEnvelope: ...
+```
+
+For each entry: `is_deemed_positive = is_debit`; `signed = -amount if is_debit else +amount`.
+This is the **only** place sign is applied, and it is the single point where the §5.1
+positive-magnitude representation becomes the §2.2 signed `AMOUNT` (debit → negative,
+credit → positive). Ordering is preserved; a voucher that does not net to zero raises
+`BalanceError`.
+
 ## Definition of Done
 
 See §1 of the task and `IMPLEMENTATION_PLAN.md`. Phase 1 is complete when the

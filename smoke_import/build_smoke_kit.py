@@ -74,6 +74,10 @@ def _contacts() -> dict[str, str]:
 def _voucher(
     vtype: str, num: str, dr: str, cr: str, amount: Decimal
 ) -> tuple[CanonicalVoucher, bool]:
+    # §5.1: the canonical model stores positive magnitude + direction in is_debit.
+    # A negative source amount (refund/reversal) is adapted HERE, at ingest, by taking
+    # the magnitude and swapping which side is debited. This is harness/ingest input
+    # adaptation, not a contract rule.
     reversal = amount < 0
     if reversal:
         dr, cr = cr, dr
@@ -97,21 +101,25 @@ def _build_all() -> list[Built]:
     with open(ZOHO / "Sales_Invoices.csv", newline="") as f:
         for r in csv.DictReader(f):
             cust = cmap.get(r["customer_id"], r["customer_id"])
-            v, rev = _voucher(
-                "Sales", r["invoice_id"], cust, "Sales Account", Decimal(r["total"])
-            )
+            v, rev = _voucher("Sales", r["invoice_id"], cust, "Sales Account", Decimal(r["total"]))
             out.append(Built(v, "Sales", rev))
     with open(ZOHO / "Customer_Payments.csv", newline="") as f:
         for r in csv.DictReader(f):
             v, rev = _voucher(
-                "Receipt", r["id"], "Bank Account", "Accounts Receivable",
+                "Receipt",
+                r["id"],
+                "Bank Account",
+                "Accounts Receivable",
                 Decimal(r["amount"]),
             )
             out.append(Built(v, "Receipt", rev))
     with open(ZOHO / "Vendor_Payments.csv", newline="") as f:
         for r in csv.DictReader(f):
             v, rev = _voucher(
-                "Payment", r["id"], "Accounts Payable", "Bank Account",
+                "Payment",
+                r["id"],
+                "Accounts Payable",
+                "Bank Account",
                 Decimal(r["amount"]),
             )
             out.append(Built(v, "Payment", rev))
@@ -158,9 +166,7 @@ def _build_masters(ledger_names: list[str]) -> bytes:
         name_list = etree.SubElement(ledger, "NAME.LIST")
         _sub(name_list, "NAME", name)
         _sub(ledger, "PARENT", GROUP_OF.get(name, DEFAULT_GROUP))
-    return etree.tostring(
-        env, xml_declaration=True, encoding="UTF-8", pretty_print=True
-    )
+    return etree.tostring(env, xml_declaration=True, encoding="UTF-8", pretty_print=True)
 
 
 def main() -> None:

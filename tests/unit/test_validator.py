@@ -131,3 +131,28 @@ def test_rejects_non_numeric_amount() -> None:
     )
     with pytest.raises(XmlContractError):
         validate_tally_xml(xml)
+
+
+def test_accepts_correctly_signed_negative_amount() -> None:
+    # §2.2 rule 5: a debit line MUST carry a negative AMOUNT (ISDEEMEDPOSITIVE=Yes).
+    # validate_tally_xml must ACCEPT a correctly-signed negative AMOUNT, not reject it.
+    # (The positive-magnitude rule is a §5.1 *canonical-input* invariant; the signed
+    # Tally AMOUNT is negative on debits by design.)
+    env = TallyImportEnvelope(
+        company_name="Co",
+        vouchers=(
+            TallyVoucher(
+                vch_type="Payment",
+                date=date(2026, 4, 1),
+                voucher_number="N-1",
+                narration=None,
+                entries=(
+                    _entry("Conveyance", True, "-12000.00"),
+                    _entry("Bank", False, "12000.00"),
+                ),
+            ),
+        ),
+    )
+    xml = serialize_envelope(env)
+    assert b"<AMOUNT>-12000.00</AMOUNT>" in xml  # debit AMOUNT is genuinely negative
+    validate_tally_xml(xml)  # must NOT raise
