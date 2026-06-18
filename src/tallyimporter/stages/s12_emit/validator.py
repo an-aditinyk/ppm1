@@ -129,3 +129,35 @@ def validate_tally_xml(xml: bytes) -> None:
         not duplicates,
         f"duplicate VOUCHERNUMBER values in batch: {duplicates}",
     )
+
+
+def validate_masters_xml(xml: bytes) -> None:
+    """Validate an 'All Masters' ledger-creation envelope. Raises ``XmlContractError``
+    on any violation; returns ``None`` when valid."""
+    root = _parse(xml)
+    _require(root.tag == "ENVELOPE", f"root element must be ENVELOPE, got {root.tag!r}")
+    children = [c.tag for c in root]
+    _require(
+        children == ["HEADER", "BODY"],
+        f"ENVELOPE children must be [HEADER, BODY], got {children}",
+    )
+    header = root[0]
+    _require(header.findtext("ID") == "All Masters", "masters HEADER/ID must be 'All Masters'")
+    _require(
+        header.findtext("TALLYREQUEST") == "Import", "masters HEADER/TALLYREQUEST must be Import"
+    )
+
+    names: list[str] = []
+    ledgers = root.findall("BODY/DATA/TALLYMESSAGE/LEDGER")
+    _require(len(ledgers) > 0, "masters envelope has no LEDGER elements")
+    for led in ledgers:
+        name = led.get("NAME")
+        _require(name is not None and name != "", "LEDGER missing NAME attribute")
+        _require(led.findtext("NAME.LIST/NAME") == name, f"LEDGER {name!r} NAME.LIST/NAME mismatch")
+        parent = led.findtext("PARENT")
+        _require(parent is not None and parent != "", f"LEDGER {name!r} missing PARENT")
+        assert name is not None  # narrowed above
+        names.append(name)
+
+    duplicates = sorted({n for n in names if names.count(n) > 1})
+    _require(not duplicates, f"duplicate ledger names: {duplicates}")

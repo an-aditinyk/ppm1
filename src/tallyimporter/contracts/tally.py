@@ -76,6 +76,49 @@ class TallyImportEnvelope(BaseModel):
     vouchers: tuple[TallyVoucher, ...]
 
 
+class TallyLedgerMaster(BaseModel):
+    """One ledger to create under a parent group. Minimal structure confirmed by a
+    real TallyPrime round-trip (smoke_import/ROUNDTRIP_FINDINGS.md): NAME.LIST/NAME +
+    PARENT + ACTION are sufficient; Tally auto-populates the rest."""
+
+    model_config = _FROZEN
+
+    name: str = Field(min_length=1)
+    parent: str = Field(min_length=1)  # a Tally predefined group
+    action: Action = "Create"
+
+
+class TallyMastersEnvelope(BaseModel):
+    """An "All Masters" import envelope creating ledgers (§2.2 rule 2: ID=All Masters)."""
+
+    model_config = _FROZEN
+
+    company_name: str = Field(min_length=1)
+    ledgers: tuple[TallyLedgerMaster, ...]
+
+    @field_validator("ledgers")
+    @classmethod
+    def _unique_non_empty(
+        cls, value: tuple[TallyLedgerMaster, ...]
+    ) -> tuple[TallyLedgerMaster, ...]:
+        if not value:
+            raise ValueError("masters envelope must contain at least one ledger")
+        names = [m.name for m in value]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate ledger names in masters envelope")
+        return value
+
+
+class TallyExport(BaseModel):
+    """The pair of import files a fresh Tally company needs: masters first, then
+    vouchers. Both have already passed their structural validators."""
+
+    model_config = _FROZEN
+
+    masters_xml: bytes
+    vouchers_xml: bytes
+
+
 class TallyImportResult(BaseModel):
     """Response target (§2.3); the parser arrives in a later stage."""
 

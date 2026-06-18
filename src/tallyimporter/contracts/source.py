@@ -142,6 +142,10 @@ class SourceProfile(BaseModel):
     parties: tuple[PartyTable, ...]
     transactions: tuple[TransactionTemplate, ...]
     ledger_overrides: tuple[tuple[str, str], ...] = ()
+    # Ledger-master creation: control account name -> Tally parent group; everything
+    # else (e.g. party ledgers) falls back to `default_ledger_group`.
+    ledger_groups: tuple[tuple[str, str], ...] = ()
+    default_ledger_group: str = "Sundry Debtors"
 
 
 # ── S04 classify / S05 map-ledgers output ────────────────────────────────────────

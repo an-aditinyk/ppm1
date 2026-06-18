@@ -42,10 +42,11 @@ def validate_tally_xml(xml: bytes) -> None                             # validat
 Pure spine→Tally. No source concept appears; input is only `CanonicalBatch`.
 
 ## 7. Gaps / future work (flagged, not Phase 1)
-- **Masters emission is not in `src/`.** Ledger-master XML (`All Masters`) was built in the
-  smoke kit (`smoke_import/`), grounded by the round-trip (minimal `NAME.LIST/PARENT/ACTION`
-  sufficient; Tally auto-fills ~185 fields). Promoting masters emission into S12 (or a sibling
-  emitter) is future work.
+- **Masters emission — DONE (now in `src/`).** `s12_emit/masters.py` derives the ledger set
+  from a `CanonicalBatch` and assigns parent groups; `serialize_masters` emits the
+  `All Masters` envelope (minimal `NAME.LIST/PARENT/ACTION`, grounded by the round-trip) and
+  `validate_masters_xml` checks it. `pipeline.run_pipeline_full` returns both files
+  (`TallyExport`). Output matches the TallyPrime-validated `masters_full.xml` byte-for-byte.
 - **Voucher numbering:** Tally auto-numbers; we accept it (X5). No emitter change.
 - **Bill allocations / GST / `PARTYLEDGERNAME`:** not emitted; depend on the S08 canonical
   extension (`README.md` §5 #4).
@@ -57,5 +58,7 @@ Pure spine→Tally. No source concept appears; input is only `CanonicalBatch`.
 - [x] Pure mapper; deterministic serializer; validator covers §2.2 with negatives.
 - [x] Golden snapshots byte-stable; property test (signed sums = 0; escaping round-trip).
 - [x] Validated on real TallyPrime (imported clean; round-tripped faithfully).
-- [ ] *(future)* masters emitter in `src/`; response parser (UTF-16) for §2.3.
+- [x] masters emitter in `src/` (`serialize_masters` + `validate_masters_xml`); both files
+      via `run_pipeline_full`.
+- [ ] *(future)* response parser (UTF-16) for §2.3.
 - [x] `make check` green.

@@ -87,6 +87,16 @@ _TRANSACTIONS: tuple[TransactionTemplate, ...] = (
     ),
 )
 
+# Control-account groups (Tally predefined groups), confirmed by the round-trip. Party
+# ledgers fall back to the default (Sundry Debtors): in this dataset only customer
+# ledgers appear as named ledgers — vendor payments post to the Accounts Payable control.
+_LEDGER_GROUPS: tuple[tuple[str, str], ...] = (
+    ("Sales Account", "Sales Accounts"),
+    ("Bank Account", "Bank Accounts"),
+    ("Accounts Receivable", "Sundry Debtors"),
+    ("Accounts Payable", "Sundry Creditors"),
+)
+
 ZOHO_PROFILE = SourceProfile(
     source_system="zoho",
     file_roles=_FILE_ROLES,
@@ -94,4 +104,6 @@ ZOHO_PROFILE = SourceProfile(
     parties=_PARTIES,
     transactions=_TRANSACTIONS,
     ledger_overrides=(),
+    ledger_groups=_LEDGER_GROUPS,
+    default_ledger_group="Sundry Debtors",
 )
