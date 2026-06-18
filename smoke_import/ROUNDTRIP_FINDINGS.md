@@ -60,11 +60,14 @@ and re-emitted it with our exact tags and signs. This is the real gate passing.
 1. **Voucher numbering is overridden.** We emit source IDs as `VOUCHERNUMBER`
    (e.g. `Ven000001`), but Tally stored **`19`** with `NUMBERINGSTYLE=Auto Retain` —
    the predefined Payment/Receipt/Sales types use automatic numbering, so Tally
-   renumbered (reproduced on an independent device/company). **Implication:**
-   source-id traceability is lost in Tally's number.
-   Decide: (a) import voucher types as masters set to *Manual* numbering, or
-   (b) carry the source id in a reference field/UDF and accept Tally's numbering.
-   *Verify in Day Book which numbers actually landed.*
+   renumbered (reproduced on an independent device/company).
+   **Decision: let Tally auto-number (accepted).** We do not force Manual numbering
+   on the voucher types — Tally's automatic voucher number is authoritative. The
+   emitter still sets a unique `VOUCHERNUMBER` per §2.2 rule 8 (the import file must
+   not contain duplicates), but Tally may override it on auto-numbered voucher types,
+   and that's fine. Consequence: the source id is not preserved as the Tally voucher
+   number; if source↔Tally traceability is ever required, carry the source id in a
+   reference field/UDF — explicitly **not** pursued for now.
 2. **Party ledger.** Tally derived `PARTYLEDGERNAME`; emitting it explicitly on
    Payment/Receipt may be needed once bill-wise allocation is added.
 3. **Bill allocations.** Customer/vendor ledgers default to `ISBILLWISEON=Yes`;
