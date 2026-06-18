@@ -3,8 +3,16 @@
 Real-instance validation of the §2 contract: data emitted by our serializer was
 imported into TallyPrime (zero errors) and then **exported back out by Tally**. This
 records what round-tripped faithfully and what Tally added/changed. Source artifacts
-(not committed — large, UTF-16): a full `All Masters` export (1000 ledgers) and a
+(not committed — large, UTF-16): a full `All Masters` export (1000 ledgers), and a
 single `Day Book` voucher export (a Payment).
+
+**Provenance / cross-device note.** The voucher export was produced on an
+**independent machine** by a coworker who imported our files into *his own* active
+company (`Test1`) and exported one Day Book voucher. So this is also a **cross-device,
+cross-company** validation. Two consequences: (a) the import landed in his **active**
+company despite our envelope's `SVCURRENTCOMPANY` — Tally imports into the selected
+company and does not hard-bind to that tag; (b) the voucher-number override (below)
+reproduces on an independent install, so it is real Tally behavior, not a local fluke.
 
 ## Verdict: the §2 voucher contract round-trips faithfully ✅
 
@@ -52,7 +60,8 @@ and re-emitted it with our exact tags and signs. This is the real gate passing.
 1. **Voucher numbering is overridden.** We emit source IDs as `VOUCHERNUMBER`
    (e.g. `Ven000001`), but Tally stored **`19`** with `NUMBERINGSTYLE=Auto Retain` —
    the predefined Payment/Receipt/Sales types use automatic numbering, so Tally
-   renumbered. **Implication:** source-id traceability is lost in Tally's number.
+   renumbered (reproduced on an independent device/company). **Implication:**
+   source-id traceability is lost in Tally's number.
    Decide: (a) import voucher types as masters set to *Manual* numbering, or
    (b) carry the source id in a reference field/UDF and accept Tally's numbering.
    *Verify in Day Book which numbers actually landed.*
